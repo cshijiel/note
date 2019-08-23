@@ -12,7 +12,7 @@ from nasa_client import NasaClient
 from word_cloud import WordCloudGenerator
 
 user: Github
-ghiblog: Repository
+blog: Repository
 cur_time: str
 
 
@@ -43,42 +43,42 @@ def login():
     user = Github(username, password)
 
 
-def get_ghiblog():
-    global ghiblog
-    ghiblog = user.get_repo('%s/ghiblog' % user.get_user().login)
+def get_blog():
+    global blog
+    blog = user.get_repo('%s/blog' % user.get_user().login)
 
 
 def bundle_summary_section():
-    global ghiblog
+    global blog
     global cur_time
     global user
 
-    total_label_count = ghiblog.get_labels().totalCount
-    total_issue_count = ghiblog.get_issues().totalCount
+    total_label_count = blog.get_labels().totalCount
+    total_issue_count = blog.get_issues().totalCount
 
     user_login = user.get_user().login
     pic_of_the_day = NasaClient().get_picture_of_the_day()
 
     summary_section = '''
 <p align='center'>
-    <a href="#"><img src="assets/ghiblog.png" width="50%"/></a>
+    <a href="#"><img src="assets/blog.png" width="50%"/></a>
 </p>
 <p align='center'>
-    <img src="https://badgen.net/circleci/github/{0}/ghiblog"/>
+    <img src="https://badgen.net/circleci/github/{0}/blog"/>
     <img src="https://badgen.net/badge/labels/{1}"/>
-    <img src="https://badgen.net/github/issues/{0}/ghiblog"/>
+    <img src="https://badgen.net/github/issues/{0}/blog"/>
     <img src="https://badgen.net/badge/last-commit/{2}"/>
-    <img src="https://badgen.net/github/forks/{0}/ghiblog"/>
-    <img src="https://badgen.net/github/stars/{0}/ghiblog"/>
-    <img src="https://badgen.net/github/watchers/{0}/ghiblog"/>
-    <img src="https://badgen.net/github/release/{0}/ghiblog"/>
+    <img src="https://badgen.net/github/forks/{0}/blog"/>
+    <img src="https://badgen.net/github/stars/{0}/blog"/>
+    <img src="https://badgen.net/github/watchers/{0}/blog"/>
+    <img src="https://badgen.net/github/release/{0}/blog"/>
 </p>
 <p align='center'>
     <a href="https://github.com/jwenjian/visitor-count-badge">
-        <img src="https://visitor-count-badge.herokuapp.com/total.svg?repo_id={0}.ghiblog"/>
+        <img src="https://visitor-count-badge.herokuapp.com/total.svg?repo_id={0}.blog"/>
     </a>
     <a href="https://github.com/jwenjian/visitor-count-badge">
-        <img src="https://visitor-count-badge.herokuapp.com/today.svg?repo_id={0}.ghiblog"/>
+        <img src="https://visitor-count-badge.herokuapp.com/today.svg?repo_id={0}.blog"/>
     </a>
 </p>
 ## :artificial_satellite:今日图片
@@ -93,10 +93,10 @@ def bundle_summary_section():
 
 
 def bundle_pinned_issues_section():
-    global ghiblog
+    global blog
 
-    pinned_label = ghiblog.get_label(':+1:置顶')
-    pinned_issues = ghiblog.get_issues(labels=(pinned_label,))
+    pinned_label = blog.get_label(':+1:置顶')
+    pinned_issues = blog.get_issues(labels=(pinned_label,))
 
     pinned_issues_section = '\n## 置顶 :thumbsup: \n'
 
@@ -113,7 +113,7 @@ def format_issue_with_labels(issue: Issue):
     labels_str = ''
 
     for label in labels:
-        labels_str += '[%s](https://github.com/%s/ghiblog/labels/%s), ' % (
+        labels_str += '[%s](https://github.com/%s/blog/labels/%s), ' % (
             label.name, user.get_user().login, urllib.parse.quote(label.name))
 
     if '---' in issue.body:
@@ -132,9 +132,9 @@ def format_issue_with_labels(issue: Issue):
 
 
 def bundle_new_created_section():
-    global ghiblog
+    global blog
 
-    new_5_created_issues = ghiblog.get_issues()[:5]
+    new_5_created_issues = blog.get_issues()[:5]
 
     new_created_section = '## 最新 :new: \n'
 
@@ -145,11 +145,11 @@ def bundle_new_created_section():
 
 
 def bundle_list_by_labels_section():
-    global ghiblog
+    global blog
     global user
 
     # word cloud
-    wordcloud_image_url = WordCloudGenerator(ghiblog).generate()
+    wordcloud_image_url = WordCloudGenerator(blog).generate()
 
     list_by_labels_section = """
 ## 分类  :card_file_box: 
@@ -160,14 +160,14 @@ def bundle_list_by_labels_section():
     </summary>
 """ % (wordcloud_image_url,)
 
-    all_labels = ghiblog.get_labels()
+    all_labels = blog.get_labels()
 
     for label in all_labels:
         temp = ''
         # 这里的count是用来计算该label下有多少issue的, 按理说应该是取issues_in_label的totalCount, 但是不知道为什么取出来的一直都是
         # 所有的issue数量, 之后再优化.
         count = 0
-        issues_in_label = ghiblog.get_issues(labels=(label,))
+        issues_in_label = blog.get_issues(labels=(label,))
         for issue in issues_in_label:
             temp += format_issue(issue)
             count += 1
@@ -209,8 +209,8 @@ def execute():
     # 1. login
     login()
 
-    # 2. get ghiblog
-    get_ghiblog()
+    # 2. get blog
+    get_blog()
 
     # 3. summary section
     summary_section = bundle_summary_section()
